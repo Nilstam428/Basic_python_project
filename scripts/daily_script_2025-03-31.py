@@ -1,40 +1,52 @@
 # Auto-generated Python script - 2025-03-31
-# Question: Write a Python function to perform matrix multiplication
+# Question: Create a Python class for a simple neural network with one hidden layer
 
 ```python
-def matrix_multiply(A, B):
-    """
-    Multiplies two matrices A and B.
+import numpy as np
 
-    Parameters:
-    A (list of list of int/float): The first matrix.
-    B (list of list of int/float): The second matrix.
+class SimpleNeuralNetwork:
+    def __init__(self, input_size, hidden_size, output_size):
+        # Initialize weights and biases
+        self.weights_input_hidden = np.random.randn(input_size, hidden_size)
+        self.bias_hidden = np.random.randn(hidden_size)
+        self.weights_hidden_output = np.random.randn(hidden_size, output_size)
+        self.bias_output = np.random.randn(output_size)
 
-    Returns:
-    list of list of int/float: The resulting matrix after multiplication.
-    """
+    def sigmoid(self, x):
+        return 1 / (1 + np.exp(-x))
 
-    # Get the number of rows in A and B, and the number of columns in B
-    rows_A = len(A)
-    cols_A = len(A[0])
-    rows_B = len(B)
-    cols_B = len(B[0])
+    def sigmoid_derivative(self, x):
+        return x * (1 - x)
 
-    # Ensure the matrices can be multiplied
-    if cols_A != rows_B:
-        raise ValueError("Number of columns in A must be equal to number of rows in B")
+    def forward(self, inputs):
+        self.hidden_input = np.dot(inputs, self.weights_input_hidden) + self.bias_hidden
+        self.hidden_output = self.sigmoid(self.hidden_input)
+        self.final_input = np.dot(self.hidden_output, self.weights_hidden_output) + self.bias_output
+        self.final_output = self.sigmoid(self.final_input)
+        return self.final_output
 
-    # Initialize the resulting matrix with zeros
-    result = [[0 for _ in range(cols_B)] for _ in range(rows_A)]
+    def train(self, inputs, targets, epochs, learning_rate):
+        for _ in range(epochs):
+            # Forward pass
+            outputs = self.forward(inputs)
 
-    # Perform matrix multiplication
-    for i in range(rows_A):
-        for j in range(cols_B):
-            for k in range(cols_A):
-                result[i][j] += A[i][k] * B[k][j]
+            # Compute error
+            output_error = targets - outputs
+            output_delta = output_error * self.sigmoid_derivative(outputs)
 
-    return result
-```
+            # Backpropagation
+            hidden_error = output_delta.dot(self.weights_hidden_output.T)
+            hidden_delta = hidden_error * self.sigmoid_derivative(self.hidden_output)
+
+            # Update weights and biases
+            self.weights_hidden_output += self.hidden_output.T.dot(output_delta) * learning_rate
+            self.bias_output += np.sum(output_delta, axis=0) * learning_rate
+            self.weights_input_hidden += inputs.T.dot(hidden_delta) * learning_rate
+            self.bias_hidden += np.sum(hidden_delta, axis=0) * learning_rate
+
+    def predict(self, inputs):
+        return self.forward(inputs)
+``` 
 
 # If this code contains a function or class but no execution code,
 # here's a simple test to run it:
