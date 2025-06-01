@@ -66,5 +66,5 @@ def calculator():
         else:
             print("Invalid choice. Please select a valid operation.")
 
-# Call the calculator function directly
+# Here the calculation function called:
 calculator()
